@@ -1,0 +1,41 @@
+<HTML>
+<Script>
+    var counter = 0;  //Counter for the number of messages you want to send
+
+    //Use this line to conenct to your particle.  Use your Particle's local address, but be sure to put in your IP
+    var sock = new WebSocket('ws://192.168.1.115:81/', ['arduino']);
+
+    //Setup the callback for the socket connection
+    sock.onopen = function (event)
+    {
+        console.log ("Connection Opened");
+    }
+
+   //Setup the callback after a message is received
+    sock.onmessage = function (event) {
+        console.log("Received Message: " +  event.data);
+        setTimeout(function() {sendMessage(sock);}, 500)
+
+        if (counter >= 10)
+        {
+            sock.onmessage = function () {};
+            sock.close();
+        }
+        counter++;
+    }
+
+    //Setup the socket callback
+    sock.onclose = function (event)
+    {
+        console.log ("Socket Closed");
+    }
+
+    //Send a message to the Socket
+    function sendMessage (socket)
+    {
+        if (socket.readyState == 1){
+            socket.send ("Hello World!");
+        }
+    }
+</Script>
+</HTML>
